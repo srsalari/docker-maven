@@ -1,9 +1,5 @@
 pipeline {
-    agent { 
-        node {
-            label 'docker-agent-maven'
-            }
-      }
+    agent any
     triggers {
         pollSCM '* * * * *'
     }
