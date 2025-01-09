@@ -1,0 +1,29 @@
+---
+- name: Install and start httpd on Amazon Linux
+  hosts: localhost
+  become: yes  # To execute tasks as root
+  tasks:
+    - name: Deploy Apache
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start the httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Ensure httpd is running
+      command: systemctl status httpd
+      register: result
+      failed_when: "'active (running)' not in result.stdout"
+      changed_when: false
+
+    - name: Open HTTP port in the firewall (if applicable)
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+      when: ansible_facts['ansible_service_mgr'] == 'firewalld'

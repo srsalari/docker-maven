@@ -1,0 +1,24 @@
+---
+- name: Install Apache
+  hosts: localhost
+  become: yes  # To execute tasks as root
+  tasks:
+    - name: Ensure the httpd package is installed
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start the httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Ensure httpd is running
+      command: systemctl status httpd
+      register: result
+      failed_when: "'active (running)' not in result.stdout"
+      changed_when: false
+
+    - name: Delpoy Sample App
+      command: echo "Welcome to Metroc" > /var/www/html/index.html
